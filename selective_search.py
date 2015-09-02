@@ -1,6 +1,7 @@
 import tempfile
 import subprocess
 import shlex
+import shutil
 import os
 import numpy as np
 import scipy.io
@@ -8,7 +9,7 @@ import scipy.io
 script_dirname = os.path.abspath(os.path.dirname(__file__))
 
 
-def get_windows(image_fnames, cmd='selective_search'):
+def get_windows(image_fnames, cmd='selective_search',outfile=''):
     """
     Run MATLAB Selective Search code on the given image filenames to
     generate window proposals.
@@ -44,7 +45,11 @@ def get_windows(image_fnames, cmd='selective_search'):
     all_boxes = [boxes - subtractor for boxes in all_boxes]
 
     # Remove temporary file, and return.
-    os.remove(output_filename)
+    if not outfile=='':
+	shutil.move(output_filename, outfile)
+    else:
+    	os.remove(output_filename)
+
     if len(all_boxes) != len(image_fnames):
         raise Exception("Something went wrong computing the windows!")
     return all_boxes
